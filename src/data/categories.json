@@ -1,0 +1,140 @@
+[
+  {
+    "id": "cat_27678",
+    "name": "ডিজিটাল মার্কেটিং, এসইও ও ফ্রিল্যান্সিং শব্দকোষ",
+    "target_count": 150,
+    "icon": "Megaphone"
+  },
+  {
+    "id": "cat_64368",
+    "name": "ডিজিটাল মার্কেটিং ও এসইও",
+    "target_count": 21,
+    "icon": "Search"
+  },
+  {
+    "id": "cat_35484",
+    "name": "ফ্রিল্যান্সিং ও সোশ্যাল মিডিয়া",
+    "target_count": 12,
+    "icon": "Share2"
+  },
+  {
+    "id": "cat_94269",
+    "name": "এআই টুলস পরিচিতি",
+    "target_count": 41,
+    "icon": "Sparkles"
+  },
+  {
+    "id": "cat_39984",
+    "name": "কৃত্রিম বুদ্ধিমত্তা শব্দকোষ",
+    "target_count": 50,
+    "icon": "Bot"
+  },
+  {
+    "id": "cat_77181",
+    "name": "কৃত্রিম বুদ্ধিমত্তা ও মেশিন লার্নিং",
+    "target_count": 20,
+    "icon": "Cpu"
+  },
+  {
+    "id": "cat_73607",
+    "name": "ক্লাউড ও সাইবার সিকিউরিটি শব্দকোষ",
+    "target_count": 30,
+    "icon": "ShieldCheck"
+  },
+  {
+    "id": "cat_34155",
+    "name": "ক্লাউড কম্পিউটিং ও সাইবার সিকিউরিটি",
+    "target_count": 14,
+    "icon": "Cloud"
+  },
+  {
+    "id": "cat_1624",
+    "name": "গ্রাফিক্স ডিজাইন শব্দকোষ",
+    "target_count": 20,
+    "icon": "Palette"
+  },
+  {
+    "id": "cat_72246",
+    "name": "গ্রাফিক্স ও ডিজাইন",
+    "target_count": 12,
+    "icon": "Image"
+  },
+  {
+    "id": "cat_13456",
+    "name": "নেটওয়ার্কিং শব্দকোষ",
+    "target_count": 40,
+    "icon": "Network"
+  },
+  {
+    "id": "cat_24894",
+    "name": "নেটওয়ার্কিং ও ইন্টারনেট",
+    "target_count": 20,
+    "icon": "Globe"
+  },
+  {
+    "id": "cat_87530",
+    "name": "এমএস অফিস শব্দকোষ",
+    "target_count": 20,
+    "icon": "FileSpreadsheet"
+  },
+  {
+    "id": "cat_81963",
+    "name": "এমএস অফিস (Word/Excel/PowerPoint)",
+    "target_count": 16,
+    "icon": "FileText"
+  },
+  {
+    "id": "cat_38164",
+    "name": "কম্পিউটার বেসিক শব্দকোষ",
+    "target_count": 20,
+    "icon": "HardDrive"
+  },
+  {
+    "id": "cat_69831",
+    "name": "কম্পিউটার বেসিক ও হার্ডওয়্যার",
+    "target_count": 25,
+    "icon": "Monitor"
+  },
+  {
+    "id": "cat_52502",
+    "name": "ইংরেজি ব্যাকরণ",
+    "target_count": 15,
+    "icon": "BookOpen"
+  },
+  {
+    "id": "cat_29944",
+    "name": "ইংরেজি সমার্থক শব্দ (Synonym)",
+    "target_count": 105,
+    "icon": "ArrowRightLeft"
+  },
+  {
+    "id": "cat_4053",
+    "name": "ইংরেজি বিপরীত শব্দ (Antonym)",
+    "target_count": 75,
+    "icon": "Repeat"
+  },
+  {
+    "id": "cat_48032",
+    "name": "ইংরেজি বানান (Spelling)",
+    "target_count": 156,
+    "icon": "SpellCheck"
+  },
+  {
+    "id": "cat_85817",
+    "name": "বাংলা ভাষা ও ব্যাকরণ",
+    "target_count": 24,
+    "icon": "Languages"
+  },
+  {
+    "id": "cat_30960",
+    "name": "সাধারণ জ্ঞান (বাংলাদেশ ও প্রকল্প)",
+    "target_count": 27,
+    "icon": "Flag"
+  },
+  {
+    "id": "cat_47646",
+    "name": "গাণিতিক যুক্তি (Aptitude)",
+    "target_count": 10,
+    "icon": "Calculator"
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "name": "DYD AI প্রকল্প — কমপ্লিট প্রস্তুতি হাব ও প্রশ্ন সমাধান ২০২৬",
+  "description": "যুব উন্নয়ন অধিদপ্তর (DYD) কৃত্রিম বুদ্ধিমত্তা (AI) কোর্স ভর্তি পরীক্ষা ও ১ম ব্যাচ প্রশ্ন সমাধান, মাধ্যমিক ও উচ্চমাধ্যমিক (SSC/HSC ICT) পাঠ্যবই ভিত্তিক ৯৩২টি প্রশ্নব্যাংক ও পূর্ণাঙ্গ প্রস্তুতি হাব।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
