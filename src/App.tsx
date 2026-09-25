@@ -8,6 +8,8 @@ import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { ProjectOverviewSection } from './components/ProjectOverviewSection';
+import { AIChatSection } from './components/AIChatSection';
+import { AIChatFloatingWidget } from './components/AIChatFloatingWidget';
 import { VideoSolutionsSection } from './components/VideoSolutionsSection';
 import { QuestionBankSection } from './components/QuestionBankSection';
 import { ExamSimulatorSection } from './components/ExamSimulatorSection';
@@ -17,7 +19,8 @@ import { DistrictCalculatorSection } from './components/DistrictCalculatorSectio
 import { 
   Sparkles, 
   Heart, 
-  ShieldAlert 
+  ShieldAlert,
+  Bot
 } from 'lucide-react';
 
 export default function App() {
@@ -65,6 +68,9 @@ export default function App() {
         {activeTab === 'overview' && (
           <ProjectOverviewSection onNavigateTab={handleTabChange} />
         )}
+        {activeTab === 'aichat' && (
+          <AIChatSection />
+        )}
         {activeTab === 'videos' && (
           <VideoSolutionsSection onStartQuizWithVideoTopics={() => handleTabChange('exam')} />
         )}
@@ -90,6 +96,11 @@ export default function App() {
 
       {/* Floating Offline Notification */}
       <OfflineIndicator />
+
+      {/* Floating AI Chat Assistant Widget across all tabs */}
+      {activeTab !== 'aichat' && (
+        <AIChatFloatingWidget onOpenFullChat={() => handleTabChange('aichat')} />
+      )}
 
       {/* Mobile Sticky Bottom Navigation */}
       <BottomNav 

@@ -13,7 +13,8 @@ import {
   X,
   Wifi,
   WifiOff,
-  Database
+  Database,
+  Bot
 } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
@@ -30,10 +31,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, bookmar
 
   const navItems = [
     { id: 'overview', label: 'প্রকল্প ও বিশ্লেষণ', icon: Award },
-    { id: 'videos', label: 'ভিডিও প্রশ্ন সমাধান', icon: Video, badge: '২টি ভিডিও' },
+    { id: 'aichat', label: 'AI স্টাডি মেন্টর', icon: Bot, badge: '🤖 চ্যাটবট' },
+    { id: 'videos', label: 'ভিডিও সমাধান', icon: Video, badge: '২টি ভিডিও' },
     { id: 'bank', label: 'প্রশ্নব্যাংক (৯৩২)', icon: HelpCircle },
-    { id: 'exam', label: 'রিয়েল মডেল টেস্ট', icon: CheckCircle2, badge: '৪০ নম্বর' },
-    { id: 'written', label: 'লিখিত অংশ (১০ নম্বর)', icon: PenTool },
+    { id: 'exam', label: 'মডেল টেস্ট', icon: CheckCircle2, badge: '৪০ নম্বর' },
+    { id: 'written', label: 'লিখিত অংশ (১০)', icon: PenTool },
     { id: 'viva', label: 'ব্যবহারিক ও ভাইভা', icon: BookOpen },
     { id: 'calculator', label: 'বরিশাল ও জেলা হিসাব', icon: Calculator },
   ];

@@ -6,7 +6,8 @@ import {
   PenTool, 
   Video, 
   Calculator,
-  BookOpen
+  BookOpen,
+  Bot
 } from 'lucide-react';
 
 interface BottomNavProps {
@@ -22,11 +23,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 }) => {
   const navTabs = [
     { id: 'overview', label: 'প্রকল্প', icon: Home },
-    { id: 'bank', label: 'প্রশ্নব্যাংক', icon: HelpCircle, badge: 'পাঠ্যবই' },
+    { id: 'aichat', label: 'AI মেন্টর', icon: Bot, badge: 'লাইভ' },
+    { id: 'bank', label: 'প্রশ্নব্যাংক', icon: HelpCircle, badge: '৯৩২' },
     { id: 'exam', label: 'মডেল টেস্ট', icon: CheckCircle2, badge: '৪০' },
     { id: 'written', label: 'লিখিত', icon: PenTool },
-    { id: 'videos', label: 'ভিডিও', icon: Video },
-    { id: 'calculator', label: 'বরিশাল/জেলা', icon: Calculator },
+    { id: 'viva', label: 'ভাইভা', icon: BookOpen },
   ];
 
   return (
