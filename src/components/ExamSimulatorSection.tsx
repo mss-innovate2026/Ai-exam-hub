@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { generateRealisticMockExam } from '../data/questionsService';
 import { Question } from '../types';
+import { evaluateWrittenSubmission, WrittenEvaluationResult } from '../services/writtenScorer';
 import confetti from 'canvas-confetti';
 import { 
   Timer, 
   CheckCircle, 
   XCircle, 
-  HelpCircle, 
   RotateCcw, 
   Award, 
   FileText, 
   AlertTriangle,
   Flag,
   Send,
-  Sparkles
+  Sparkles,
+  CheckCircle2,
+  TrendingUp,
+  BookOpen
 } from 'lucide-react';
 
 export const ExamSimulatorSection: React.FC = () => {
@@ -29,6 +32,10 @@ export const ExamSimulatorSection: React.FC = () => {
   const [emailText, setEmailText] = useState<string>('');
   const [activeSection, setActiveSection] = useState<'mcq' | 'written'>('mcq');
 
+  // Evaluated Written Results
+  const [paragraphResult, setParagraphResult] = useState<WrittenEvaluationResult | null>(null);
+  const [emailResult, setEmailResult] = useState<WrittenEvaluationResult | null>(null);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Start exam
@@ -39,6 +46,8 @@ export const ExamSimulatorSection: React.FC = () => {
     setFlaggedQuestions({});
     setParagraphText('');
     setEmailText('');
+    setParagraphResult(null);
+    setEmailResult(null);
     setCurrentIdx(0);
     setTimeLeft(40 * 60);
     setActiveSection('mcq');
@@ -66,7 +75,24 @@ export const ExamSimulatorSection: React.FC = () => {
 
   const handleFinishExam = () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    
+    // Evaluate written submissions
+    const pEval = evaluateWrittenSubmission(paragraphText, {
+      type: 'paragraph',
+      expectedKeywords: ['artificial intelligence', 'freelancing', 'digital', 'skills', 'youth', 'opportunities', 'efficient', 'future', 'income'],
+      minWords: 40
+    });
+
+    const eEval = evaluateWrittenSubmission(emailText, {
+      type: 'email',
+      expectedKeywords: ['dyd', 'admission', 'course', 'training', 'certificate', 'freelance', 'regards', 'sincerely'],
+      minWords: 35
+    });
+
+    setParagraphResult(pEval);
+    setEmailResult(eEval);
     setExamState('result');
+
     // Trigger confetti
     try {
       confetti({
@@ -125,13 +151,13 @@ export const ExamSimulatorSection: React.FC = () => {
 
         <div className="space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
-            রিয়েল এক্সাম সিমুলেটর
+            রিয়েল এক্সাম সিমুলেটর ও লাইভ লিখিত মূল্যায়ন
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800">
             DYD AI কোর্স পূর্ণাঙ্গ মডেল টেস্ট (৪০ নম্বর)
           </h2>
           <p className="text-slate-600 text-sm leading-relaxed max-w-xl mx-auto">
-            প্রথম ব্যাচের আসল প্রশ্নপত্রের সঠিক অনুপাত (Weightage) অনুযায়ী ৩০টি MCQ এবং ১০ নম্বরের লিখিত অংশের (Paragraph + Email) সমন্বয়ে তৈরি।
+            প্রথম ব্যাচের আসল প্রশ্নপত্রের সঠিক অনুপাত অনুযায়ী ৩০টি MCQ এবং ১০ নম্বরের লিখিত অংশের (Paragraph ৫ + Email ৫) সমন্বয়ে তৈরি। লিখিত অংশ জমা দিলে স্বয়ংক্রিয়ভাবে নম্বর ও বিস্তারিত ব্যাখ্যা প্রদান করা হবে।
           </p>
         </div>
 
@@ -145,17 +171,17 @@ export const ExamSimulatorSection: React.FC = () => {
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
             <span className="text-[11px] text-slate-500 font-semibold block">লিখিত অংশ</span>
             <b className="text-lg text-teal-900">১০ নম্বর</b>
-            <span className="text-[10px] text-slate-400 block">Paragraph ৫ + Email ৫</span>
+            <span className="text-[10px] text-slate-400 block">লেখা অনুযায়ী স্বয়ংক্রিয় নম্বর</span>
           </div>
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
             <span className="text-[11px] text-slate-500 font-semibold block">নির্ধারিত সময়</span>
             <b className="text-lg text-amber-700">৪০ মিনিট</b>
-            <span className="text-[10px] text-slate-400 block">টাইমার সহ</span>
+            <span className="text-[10px] text-slate-400 block">কাউন্টডাউন টাইমার</span>
           </div>
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
             <span className="text-[11px] text-slate-500 font-semibold block">নেগেটিভ মার্ক</span>
             <b className="text-lg text-emerald-700">নেই</b>
-            <span className="text-[10px] text-slate-400 block">সবগুলো উত্তর দিতে হবে</span>
+            <span className="text-[10px] text-slate-400 block">সবগুলো উত্তর দিন</span>
           </div>
         </div>
 
@@ -168,13 +194,13 @@ export const ExamSimulatorSection: React.FC = () => {
           <ul className="list-disc pl-5 space-y-1 text-slate-700">
             <li>পরীক্ষা শুরু বাটনে চাপার সাথে সাথে ৪০ মিনিটের কাউন্টডাউন শুরু হবে।</li>
             <li>ডিজিটাল মার্কেটিং, ইংরেজি, এআই, গ্রাফিক্স ও অফিস—সব বিভাগ থেকে প্রশ্ন থাকবে।</li>
-            <li>লিখিত অংশের বক্সগুলোতে প্যারাগ্রাফ ও ইমেইল টাইপ করে মডেল উত্তরের সাথে মিলিয়ে নিতে পারবেন।</li>
+            <li>লিখিত অংশের বক্সগুলোতে প্যারাগ্রাফ ও ইমেইল টাইপ করে জমা দিলে স্বয়ংক্রিয়ভাবে প্রতিটি অংশের নম্বর ও বিশদ ফিডব্যাক পাবেন।</li>
           </ul>
         </div>
 
         <button
           onClick={handleStartExam}
-          className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-teal-700 to-emerald-600 hover:from-teal-800 hover:to-emerald-700 text-white font-extrabold text-base rounded-xl shadow-md shadow-teal-900/20 hover:scale-[1.02] transition-all"
+          className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-teal-700 to-emerald-600 hover:from-teal-800 hover:to-emerald-700 text-white font-extrabold text-base rounded-xl shadow-md shadow-teal-900/20 hover:scale-[1.02] transition-all cursor-pointer"
         >
           পরীক্ষা শুরু করুন (Start Test)
         </button>
@@ -184,13 +210,16 @@ export const ExamSimulatorSection: React.FC = () => {
 
   // RESULT SCREEN
   if (examState === 'result' && examData) {
-    const score = calculateScore();
-    const isPassed = score.correct >= 15; // 50%+ passing
+    const mcqScore = calculateScore();
+    const pScore = paragraphResult ? paragraphResult.score : 0;
+    const eScore = emailResult ? emailResult.score : 0;
+    const grandTotal = Number((mcqScore.correct + pScore + eScore).toFixed(1));
+    const isPassed = grandTotal >= 20; // 50%+ passing
 
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* Scorecard Header */}
+        {/* Grand Scorecard Header */}
         <div className={`rounded-3xl p-6 sm:p-8 text-white text-center shadow-lg relative overflow-hidden ${
           isPassed 
             ? 'bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700' 
@@ -201,26 +230,43 @@ export const ExamSimulatorSection: React.FC = () => {
               <Sparkles className="w-8 h-8 text-amber-300" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-black">
-              {isPassed ? 'অভিনন্দন! আপনি প্রাথমিক বাছাইয়ে উত্তীর্ণ হতে পারেন' : 'অনুশীলন চালিয়ে যান! আরো উন্নতির সুযোগ রয়েছে'}
+              {isPassed ? 'অভিনন্দন! আপনি পূর্ণাঙ্গ পরীক্ষায় দারুণ ফলাফল করেছেন' : 'অনুশীলন চালিয়ে যান! লিখিত ও MCQ-তে আরও উন্নতির সুযোগ রয়েছে'}
             </h2>
             <p className="text-xs sm:text-sm text-teal-100 max-w-md mx-auto">
               {isPassed 
-                ? 'আপনার প্রাপ্ত নম্বর মৌখিক ও ব্যবহারিক পরীক্ষায় ডাকার জন্য সন্তোষজনক।' 
-                : 'কমপক্ষে ১৫ নম্বর পেলে ভাইভা ও ব্যবহারিক পরীক্ষার জন্য নিরাপদ থাকা যায়।'}
+                ? 'আপনার সর্বমোট প্রাপ্ত নম্বর ভাইভা ও ব্যবহারিক পরীক্ষায় ডাকার জন্য অত্যন্ত নিরাপদ।' 
+                : 'কমপক্ষে ২০+ নম্বর নিশ্চিত করতে লিখিত অংশের ৫-লাইনের সূত্র ও MCQ নিয়মিত অনুশীলন করুন।'}
             </p>
 
-            <div className="inline-flex items-baseline gap-2 bg-white/15 px-6 py-3 rounded-2xl border border-white/20 my-2">
-              <span className="text-4xl sm:text-5xl font-black text-amber-300">{score.correct}</span>
-              <span className="text-lg text-white/80 font-bold">/ ৩০ (MCQ)</span>
-              <span className="text-sm bg-white/25 px-2 py-0.5 rounded-full ml-2 font-bold">
-                {score.percentage}%
+            {/* Grand Total Score Badge */}
+            <div className="inline-flex items-baseline gap-3 bg-white/15 px-6 py-3.5 rounded-2xl border border-white/20 my-2">
+              <span className="text-4xl sm:text-5xl font-black text-amber-300">{grandTotal}</span>
+              <span className="text-lg text-white/90 font-bold">/ ৪০ (সর্বমোট)</span>
+              <span className="text-xs bg-white/25 px-2.5 py-1 rounded-full ml-1 font-bold">
+                {Math.round((grandTotal / 40) * 100)}% নম্বর
               </span>
             </div>
 
-            <div className="flex justify-center gap-3 pt-2">
+            {/* 3-Part Marks Distribution Row */}
+            <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto pt-2 text-xs">
+              <div className="bg-black/20 p-2 rounded-xl border border-white/10">
+                <span className="text-white/70 block text-[11px]">MCQ স্কোর</span>
+                <b className="text-base text-amber-300">{mcqScore.correct}</b> / ৩০
+              </div>
+              <div className="bg-black/20 p-2 rounded-xl border border-white/10">
+                <span className="text-white/70 block text-[11px]">Paragraph</span>
+                <b className="text-base text-teal-300">{pScore}</b> / ৫
+              </div>
+              <div className="bg-black/20 p-2 rounded-xl border border-white/10">
+                <span className="text-white/70 block text-[11px]">Email</span>
+                <b className="text-base text-teal-300">{eScore}</b> / ৫
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-3 pt-3">
               <button
                 onClick={handleStartExam}
-                className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all shadow-sm"
+                className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
                 নতুন প্রশ্নে আবার পরীক্ষা দিন
@@ -229,62 +275,151 @@ export const ExamSimulatorSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Written Assessment Preview */}
-        <div className="bg-white rounded-2xl p-6 border border-teal-100 shadow-sm space-y-5">
-          <h3 className="font-extrabold text-slate-800 text-lg flex items-center gap-2">
-            <FileText className="w-5 h-5 text-teal-600" />
-            লিখিত অংশের স্ব-মূল্যায়ন (১০ নম্বর)
-          </h3>
+        {/* ============================================================== */}
+        {/* WRITTEN ASSESSMENT DETAILED CARDS */}
+        {/* ============================================================== */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-teal-100 shadow-sm space-y-6">
+          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <h3 className="font-extrabold text-slate-800 text-lg flex items-center gap-2">
+              <FileText className="w-5 h-5 text-teal-600" />
+              লিখিত অংশের বিশদ মূল্যায়ন ও খাতা রিভিউ (১০ নম্বর)
+            </h3>
+            <span className="text-xs font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+              প্রাপ্ত: {(pScore + eScore).toFixed(1)} / ১০
+            </span>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
             {/* Paragraph Box */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded">
-                  Paragraph (৫ নম্বর)
+                  ১. Paragraph (৫ নম্বর)
                 </span>
-                <span className="text-xs text-slate-500">
-                  শব্দ সংখ্যা: {paragraphText.trim() ? paragraphText.trim().split(/\s+/).length : 0}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-black text-teal-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    নম্বর: {pScore} / ৫.০
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    ({paragraphResult?.wordCount || 0} শব্দ)
+                  </span>
+                </div>
               </div>
-              <h4 className="text-xs font-bold text-slate-700">{examData.paragraphPrompt.title}</h4>
-              <div className="p-3 bg-white rounded-lg border border-slate-200 text-xs text-slate-700 min-h-[90px] whitespace-pre-wrap">
+
+              <h4 className="text-xs font-bold text-slate-800">{examData.paragraphPrompt.title}</h4>
+              
+              {/* User text */}
+              <div className="p-3.5 bg-white rounded-xl border border-slate-200 text-xs text-slate-700 min-h-[90px] whitespace-pre-wrap leading-relaxed shadow-inner">
                 {paragraphText.trim() || <span className="text-slate-400 italic">আপনি কোনো প্যারাগ্রাফ লেখেননি।</span>}
               </div>
-              <div className="bg-emerald-50 text-emerald-950 p-3 rounded-lg border border-emerald-200 text-xs space-y-1">
-                <b className="text-emerald-900 font-bold block">💡 ৫-বাক্যের সূত্রের মডেল উত্তর:</b>
-                <p className="italic text-emerald-900/90 leading-relaxed">
-                  "Artificial Intelligence can bring a lot of positive change to our youth. First, it helps learn skills quickly. Second, it makes work faster and efficient. Third, it generates freelance income. In this way, AI plays a vital role for the future."
+
+              {/* Evaluated Metrics */}
+              {paragraphResult && paragraphResult.wordCount > 0 && (
+                <div className="space-y-2 text-xs">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {paragraphResult.metrics.map((m, i) => (
+                      <div key={i} className="bg-white p-2 rounded-lg border border-slate-200 text-[11px]">
+                        <span className="text-slate-500 block truncate">{m.nameBn}</span>
+                        <b className="text-teal-800">{m.score}/{m.maxScore}</b>
+                      </div>
+                    ))}
+                  </div>
+
+                  {paragraphResult.strengths.length > 0 && (
+                    <div className="text-[11px] text-emerald-900 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
+                      <b className="block font-bold">✓ ভালো দিক:</b> {paragraphResult.strengths[0]}
+                    </div>
+                  )}
+
+                  {paragraphResult.improvements.length > 0 && (
+                    <div className="text-[11px] text-amber-900 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                      <b className="block font-bold">⚠️ উন্নয়নের সুযোগ:</b> {paragraphResult.improvements[0]}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Model Answer Box */}
+              <div className="bg-emerald-50 text-emerald-950 p-3.5 rounded-xl border border-emerald-200 text-xs space-y-1.5">
+                <b className="text-emerald-900 font-bold block flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  আদর্শ ৫-বাক্যের মডেল প্যারাগ্রাফ:
+                </b>
+                <p className="italic text-emerald-900 leading-relaxed font-serif">
+                  "Artificial Intelligence can bring a lot of positive change to the youth of Bangladesh. First, it can help people learn new skills quickly through easy and modern methods. Second, it can create new opportunities and make work faster, easier, and more efficient. Third, it can help young people earn better income through freelancing and reduce hard manual work. In this way, Artificial Intelligence can play a vital role in building a better future."
                 </p>
               </div>
             </div>
 
             {/* Email Box */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded">
-                  Email (৫ নম্বর)
+                  ২. Email (৫ নম্বর)
                 </span>
-                <span className="text-xs text-slate-500">
-                  শব্দ সংখ্যা: {emailText.trim() ? emailText.trim().split(/\s+/).length : 0}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-black text-teal-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    নম্বর: {eScore} / ৫.০
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    ({emailResult?.wordCount || 0} শব্দ)
+                  </span>
+                </div>
               </div>
-              <h4 className="text-xs font-bold text-slate-700">{examData.emailPrompt.title}</h4>
-              <div className="p-3 bg-white rounded-lg border border-slate-200 text-xs text-slate-700 min-h-[90px] whitespace-pre-wrap font-mono">
+
+              <h4 className="text-xs font-bold text-slate-800">{examData.emailPrompt.title}</h4>
+              
+              {/* User text */}
+              <div className="p-3.5 bg-white rounded-xl border border-slate-200 text-xs text-slate-700 min-h-[90px] whitespace-pre-wrap font-mono leading-relaxed shadow-inner">
                 {emailText.trim() || <span className="text-slate-400 italic">আপনি কোনো ইমেইল লেখেননি।</span>}
               </div>
-              <div className="bg-emerald-50 text-emerald-950 p-3 rounded-lg border border-emerald-200 text-xs space-y-1">
-                <b className="text-emerald-900 font-bold block">💡 ইমেইল চেকলিস্ট:</b>
-                <p className="text-emerald-900/90 leading-relaxed">
-                  To, From, Date, Subject, Greeting (Hi/Dear), Purpose, Details, Closing এবং Signature স্পষ্টভাবে লিখেছিলেন তো? এই ফরম্যাটের জন্যই ৩ নম্বর বরাদ্দ!
-                </p>
+
+              {/* Evaluated Metrics */}
+              {emailResult && emailResult.wordCount > 0 && (
+                <div className="space-y-2 text-xs">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {emailResult.metrics.map((m, i) => (
+                      <div key={i} className="bg-white p-2 rounded-lg border border-slate-200 text-[11px]">
+                        <span className="text-slate-500 block truncate">{m.nameBn}</span>
+                        <b className="text-teal-800">{m.score}/{m.maxScore}</b>
+                      </div>
+                    ))}
+                  </div>
+
+                  {emailResult.strengths.length > 0 && (
+                    <div className="text-[11px] text-emerald-900 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
+                      <b className="block font-bold">✓ ভালো দিক:</b> {emailResult.strengths[0]}
+                    </div>
+                  )}
+
+                  {emailResult.improvements.length > 0 && (
+                    <div className="text-[11px] text-amber-900 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                      <b className="block font-bold">⚠️ উন্নয়নের সুযোগ:</b> {emailResult.improvements[0]}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Model Answer Box */}
+              <div className="bg-emerald-50 text-emerald-950 p-3.5 rounded-xl border border-emerald-200 text-xs space-y-1.5">
+                <b className="text-emerald-900 font-bold block flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  আদর্শ ইমেইল ফরম্যাট মডেল:
+                </b>
+                <div className="font-mono text-[11px] text-emerald-950 space-y-0.5 leading-snug">
+                  <div>To: coordinator.dyd@gov.bd | Sub: Course Information</div>
+                  <div>Dear Sir, I am writing to respectfully inquire about the AI course...</div>
+                  <div>Sincerely yours, [Your Name]</div>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
 
         {/* Detailed MCQ Answer Review */}
-        <div className="bg-white rounded-2xl p-6 border border-teal-100 shadow-sm space-y-5">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-teal-100 shadow-sm space-y-5">
           <h3 className="font-extrabold text-slate-800 text-lg flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-teal-600" />
             MCQ বিস্তারিত পর্যালোচনা (প্রশ্ন ১ থেকে ৩০)
@@ -299,7 +434,7 @@ export const ExamSimulatorSection: React.FC = () => {
               return (
                 <div 
                   key={idx}
-                  className={`p-4 rounded-xl border transition-colors space-y-2.5 ${
+                  className={`p-4 rounded-2xl border transition-colors space-y-2.5 ${
                     isCorrect 
                       ? 'bg-emerald-50/40 border-emerald-200' 
                       : isSkipped 
@@ -309,7 +444,7 @@ export const ExamSimulatorSection: React.FC = () => {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-2">
-                      <span className={`w-6 h-6 rounded text-xs font-bold flex items-center justify-center shrink-0 ${
+                      <span className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 ${
                         isCorrect ? 'bg-emerald-600 text-white' : isSkipped ? 'bg-slate-300 text-slate-800' : 'bg-rose-600 text-white'
                       }`}>
                         {idx + 1}
@@ -319,15 +454,15 @@ export const ExamSimulatorSection: React.FC = () => {
                       </p>
                     </div>
                     {isCorrect ? (
-                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded shrink-0">
+                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full shrink-0">
                         সঠিক (+১)
                       </span>
                     ) : isSkipped ? (
-                      <span className="text-[11px] font-bold text-slate-600 bg-slate-200 px-2 py-0.5 rounded shrink-0">
+                      <span className="text-[11px] font-bold text-slate-600 bg-slate-200 px-2.5 py-0.5 rounded-full shrink-0">
                         অনুত্তর (০)
                       </span>
                     ) : (
-                      <span className="text-[11px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded shrink-0">
+                      <span className="text-[11px] font-bold text-rose-700 bg-rose-100 px-2.5 py-0.5 rounded-full shrink-0">
                         ভুল (০)
                       </span>
                     )}
@@ -340,7 +475,7 @@ export const ExamSimulatorSection: React.FC = () => {
                       return (
                         <div
                           key={optIdx}
-                          className={`p-2 rounded-lg border font-medium flex items-center justify-between ${
+                          className={`p-2.5 rounded-xl border font-medium flex items-center justify-between ${
                             isThisCorrect
                               ? 'bg-emerald-100 text-emerald-950 border-emerald-300 font-bold'
                               : isUserChoice
@@ -356,8 +491,15 @@ export const ExamSimulatorSection: React.FC = () => {
                     })}
                   </div>
 
-                  <div className="text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200">
-                    <b className="text-teal-800">ব্যাখ্যা:</b> {q.explanation}
+                  <div className="text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-200 space-y-1">
+                    <div>
+                      <b className="text-teal-900">বিস্তারিত ব্যাখ্যা:</b> {q.explanation}
+                    </div>
+                    {q.source && (
+                      <div className="text-[11px] text-slate-500 font-medium pt-1">
+                        📖 তথ্যসূত্র: {q.source}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -421,7 +563,7 @@ export const ExamSimulatorSection: React.FC = () => {
 
         <button
           onClick={handleFinishExam}
-          className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition-all shadow-sm"
+          className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
         >
           <Send className="w-3.5 h-3.5" />
           <span>জমা দিন</span>
@@ -469,7 +611,7 @@ export const ExamSimulatorSection: React.FC = () => {
                   <button
                     key={optIdx}
                     onClick={() => handleOptionSelect(currentIdx, optIdx)}
-                    className={`w-full p-3.5 rounded-xl text-xs sm:text-sm text-left border flex items-center gap-3 transition-all ${
+                    className={`w-full p-3.5 rounded-xl text-xs sm:text-sm text-left border flex items-center gap-3 transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-teal-700 text-white border-teal-800 font-bold shadow-sm'
                         : 'bg-slate-50/70 hover:bg-teal-50/50 text-slate-700 border-slate-200'
@@ -491,7 +633,7 @@ export const ExamSimulatorSection: React.FC = () => {
               <button
                 disabled={currentIdx === 0}
                 onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
-                className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 পূর্ববর্তী
               </button>
@@ -499,7 +641,7 @@ export const ExamSimulatorSection: React.FC = () => {
               <button
                 disabled={currentIdx === examData.mcqs.length - 1}
                 onClick={() => setCurrentIdx(prev => Math.min(examData.mcqs.length - 1, prev + 1))}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-teal-700 text-white hover:bg-teal-800 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-teal-700 text-white hover:bg-teal-800 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 পরবর্তী
               </button>
@@ -532,7 +674,7 @@ export const ExamSimulatorSection: React.FC = () => {
                   <button
                     key={idx}
                     onClick={() => setCurrentIdx(idx)}
-                    className={`h-9 rounded-lg text-xs border flex items-center justify-center transition-all ${btnStyle}`}
+                    className={`h-9 rounded-lg text-xs border flex items-center justify-center transition-all cursor-pointer ${btnStyle}`}
                   >
                     {idx + 1}
                   </button>
@@ -565,10 +707,10 @@ export const ExamSimulatorSection: React.FC = () => {
               লিখিত অংশ — মোট ১০ নম্বর
             </span>
             <h3 className="text-lg font-bold text-slate-800 mt-2">
-              ইংরেজি প্যারাগ্রাফ ও ইমেইল লিখন
+              ইংরেজি প্যারাগ্রাফ ও ইমেইল লিখন (লেখা অনুযায়ী নম্বর ও ফিডব্যাক)
             </h3>
             <p className="text-xs text-slate-500">
-              নিচের ফিল্ডগুলোতে আপনার উত্তর টাইপ করুন। সাবমিট করার পর মডেল উত্তরের সাথে মূল্যায়ন দেখতে পাবেন।
+              নিচের ফিল্ডগুলোতে আপনার উত্তর টাইপ করুন। সাবমিট করার পর স্বয়ংক্রিয়ভাবে খাতা মূল্যায়িত হবে।
             </p>
           </div>
 
@@ -578,7 +720,7 @@ export const ExamSimulatorSection: React.FC = () => {
               <label className="text-sm font-bold text-slate-800">
                 ১. {examData.paragraphPrompt.title} (৫ নম্বর)
               </label>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-400 font-mono">
                 শব্দ: {paragraphText.trim() ? paragraphText.trim().split(/\s+/).length : 0}
               </span>
             </div>
@@ -598,7 +740,7 @@ export const ExamSimulatorSection: React.FC = () => {
               <label className="text-sm font-bold text-slate-800">
                 ২. {examData.emailPrompt.title} (৫ নম্বর)
               </label>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-400 font-mono">
                 শব্দ: {emailText.trim() ? emailText.trim().split(/\s+/).length : 0}
               </span>
             </div>
@@ -612,12 +754,19 @@ export const ExamSimulatorSection: React.FC = () => {
             />
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-between items-center pt-2">
             <button
               onClick={() => setActiveSection('mcq')}
-              className="px-5 py-2.5 bg-teal-700 text-white font-bold text-xs rounded-xl hover:bg-teal-800"
+              className="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-200 cursor-pointer"
             >
-              MCQ সেকশনে ফিরে যান
+              MCQ সেকশনে যান
+            </button>
+            <button
+              onClick={handleFinishExam}
+              className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center gap-1.5"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>পূর্ণাঙ্গ পরীক্ষা জমা দিন</span>
             </button>
           </div>
         </div>
